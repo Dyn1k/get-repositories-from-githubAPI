@@ -1,12 +1,8 @@
-function getRepos(evt) {
+function getRepositories(evt) {
   const searchData = evt.target.value;
 
   if (searchData) {
-    fetch(
-      `https://api.github.com/search/repositories?q=${searchData}&per_page=5`
-    )
-      .then((r) => r.json())
-      .then((r) => r.items)
+    connect(searchData)
       .then((r) => {
         autocomplete.classList.add('active');
         return r.map((repoName) => {
@@ -35,6 +31,14 @@ function getRepos(evt) {
     autocomplete.classList.remove('active');
     autocomplete.innerHTML = null;
   }
+}
+
+function connect(request) {
+  return fetch(
+    `https://api.github.com/search/repositories?q=${request}&per_page=5`
+  )
+    .then((r) => r.json())
+    .then((r) => r.items);
 }
 
 function addRepository(obj) {
@@ -91,7 +95,7 @@ function showSuggestions(list) {
   if (!list.length) {
     autocomplete.textContent = 'Nothing found';
   } else {
-    list.map((l) => autocomplete.append(l));
+    list.map((item) => autocomplete.append(item));
   }
 }
 
@@ -106,6 +110,6 @@ const searchWrapper = document.querySelector('.search');
 const input = searchWrapper.querySelector('.search__input');
 const autocomplete = searchWrapper.querySelector('.search__autocomplete');
 
-const debounceGetRepos = debounce(getRepos, 1000);
+const debounceGetRepos = debounce(getRepositories, 1000);
 
 input.addEventListener('keyup', debounceGetRepos);
